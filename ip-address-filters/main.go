@@ -1,32 +1,35 @@
 package main
 
-import "runtime"
+import (
+	"fmt"
+	"runtime"
+)
 
 func main() {
-
-	cuckoo_test()
-
-	runtime.GC()
-	PrintMemUsage()
-
-	hash_test()
-
-	runtime.GC()
-	PrintMemUsage()
-
-	array_test()
-
-	runtime.GC()
-	PrintMemUsage()
 
 	bitset_test()
 
 	runtime.GC()
-	PrintMemUsage()
+	fmt.Println("")
+
+	cuckoo_test()
+
+	runtime.GC()
+	fmt.Println("")
+
+	hash_test()
+
+	runtime.GC()
+	fmt.Println("")
+
+	array_test()
+
+	runtime.GC()
+	fmt.Println("")
 
 	bloom_test()
 
 	runtime.GC()
-	PrintMemUsage()
+	fmt.Println("")
 
 }
