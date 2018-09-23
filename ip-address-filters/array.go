@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"net"
-	"time"
 
 	"github.com/valyala/fastrand"
 )
@@ -14,16 +13,17 @@ func array_test_sequential_1(a array) {
 
 	fmt.Println("[array] Testing sequential 1 ...")
 
-	lastTime := time.Now()
+	pro := newProgress()
 
 	for i := 0; i < (1 << 32); i++ {
+
 		bit := uint(i)
 		if a[i] {
-			fmt.Println("\tmatched", uint2ip(bit))
+			checkMatch(uint2ip(bit))
 		}
 
-		if (bit & 0xffffff) == 0xffffff {
-			progressReport(&lastTime, 0xffffff, "[array-seq1] at %v", uint2ip(bit))
+		if pro.op() && !pro.report("[array-seq1] at "+uint2ip(bit).String()) {
+			return
 		}
 
 	}
@@ -34,7 +34,7 @@ func array_test_sequential_2(arr array) {
 
 	fmt.Println("[array] Testing sequential 2 ...")
 
-	lastTime := time.Now()
+	pro := newProgress()
 	ip := net.IP{0, 0, 0, 0}
 
 	for a := 0; a <= 255; a++ {
@@ -45,17 +45,19 @@ func array_test_sequential_2(arr array) {
 				ip[2] = uint8(c)
 				for d := 0; d <= 255; d++ {
 					ip[3] = uint8(d)
+
 					bit := ip2uint(ip)
 					if arr[bit] {
-						fmt.Println("\tmatched", ip)
+						checkMatch(ip)
+					}
+
+					if pro.op() && !pro.report("[array-seq2] at "+ip.String()) {
+						return
 					}
 
 				}
 			}
 		}
-
-		progressReport(&lastTime, 0xffffff, "[array-seq2] at %v", ip)
-
 	}
 
 }
@@ -64,18 +66,20 @@ func array_test_random(a array) {
 
 	fmt.Println("[array] Testing random ...")
 
-	lastTime := time.Now()
+	pro := newProgress()
 	rng := fastrand.RNG{}
 
 	for i := 0; i < (1 << 28); i++ {
+
 		bit := uint(rng.Uint32())
 		if a[bit] {
-			fmt.Println("\tmatched", uint2ip(bit))
+			checkMatch(uint2ip(bit))
 		}
 
-		if (i & 0xffffff) == 0xffffff {
-			progressReport(&lastTime, 0xffffff, "[array-rand] at %v", uint2ip(bit))
+		if pro.op() && !pro.report("[array-rand] at "+uint2ip(bit).String()) {
+			return
 		}
+
 	}
 
 }

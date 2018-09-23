@@ -4,7 +4,6 @@ import (
 	"encoding/binary"
 	"fmt"
 	"net"
-	"time"
 
 	"github.com/valyala/fastrand"
 	"github.com/willf/bloom"
@@ -14,7 +13,7 @@ func bloom_test_sequential(bf *bloom.BloomFilter) {
 
 	fmt.Println("[bloom] Testing sequential ...")
 
-	lastTime := time.Now()
+	pro := newProgress()
 	ip := net.IP{0, 0, 0, 0}
 
 	for a := 0; a <= 255; a++ {
@@ -27,15 +26,16 @@ func bloom_test_sequential(bf *bloom.BloomFilter) {
 					ip[3] = uint8(d)
 
 					if bf.Test(ip) {
-						fmt.Println("\tmatched", ip)
+						checkMatch(ip)
+					}
+
+					if pro.op() && !pro.report("[bloom-seq] at "+ip.String()) {
+						return
 					}
 
 				}
 			}
 		}
-
-		progressReport(&lastTime, 0xffffff, "[bloom-seq] at %v", ip)
-
 	}
 
 }
@@ -44,20 +44,22 @@ func bloom_test_random(bf *bloom.BloomFilter) {
 
 	fmt.Println("[bloom] Testing random ...")
 
-	lastTime := time.Now()
+	pro := newProgress()
 	rng := fastrand.RNG{}
 	ip := net.IP{0, 0, 0, 0}
 
 	for i := 0; i < (1 << 28); i++ {
 		bit := uint(rng.Uint32())
+
 		binary.BigEndian.PutUint32(ip[:], uint32(bit))
 		if bf.Test(ip) {
-			fmt.Println("\tmatched", ip)
+			checkMatch(ip)
 		}
 
-		if (i & 0xffffff) == 0xffffff {
-			progressReport(&lastTime, 0xffffff, "[bloom-rand] at %v", uint2ip(bit))
+		if pro.op() && !pro.report("[bloom-rand] at "+ip.String()) {
+			return
 		}
+
 	}
 
 }

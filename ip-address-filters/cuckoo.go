@@ -4,7 +4,6 @@ import (
 	"encoding/binary"
 	"fmt"
 	"net"
-	"time"
 
 	"github.com/seiflotfy/cuckoofilter"
 	"github.com/valyala/fastrand"
@@ -14,7 +13,7 @@ func cuckoo_test_sequential(cf *cuckoofilter.CuckooFilter) {
 
 	fmt.Println("[cuckoo] Testing sequential ...")
 
-	lastTime := time.Now()
+	pro := newProgress()
 	ip := net.IP{0, 0, 0, 0}
 
 	for a := 0; a <= 255; a++ {
@@ -27,14 +26,16 @@ func cuckoo_test_sequential(cf *cuckoofilter.CuckooFilter) {
 					ip[3] = uint8(d)
 
 					if cf.Lookup(ip) {
-						fmt.Println("\tmatched", ip)
+						checkMatch(ip)
+					}
+
+					if pro.op() && !pro.report("[cuckoo-seq] at "+ip.String()) {
+						return
 					}
 
 				}
 			}
 		}
-
-		progressReport(&lastTime, 0xffffff, "[cuckoo-seq] at %v", ip)
 
 	}
 
@@ -44,7 +45,7 @@ func cuckoo_test_random(cf *cuckoofilter.CuckooFilter) {
 
 	fmt.Println("[cuckoo] Testing random ...")
 
-	lastTime := time.Now()
+	pro := newProgress()
 	rng := fastrand.RNG{}
 	ip := net.IP{0, 0, 0, 0}
 
@@ -52,12 +53,13 @@ func cuckoo_test_random(cf *cuckoofilter.CuckooFilter) {
 		bit := uint(rng.Uint32())
 		binary.BigEndian.PutUint32(ip[:], uint32(bit))
 		if cf.Lookup(ip) {
-			fmt.Println("\tmatched", ip)
+			checkMatch(ip)
 		}
 
-		if (i & 0xffffff) == 0xffffff {
-			progressReport(&lastTime, 0xffffff, "[cuckoo-rand] at %v", uint2ip(bit))
+		if pro.op() && !pro.report("[cuckoo-rand] at "+ip.String()) {
+			return
 		}
+
 	}
 
 }

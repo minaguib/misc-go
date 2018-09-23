@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net"
 	"runtime"
-	"time"
 )
 
 func ip2uint(ip net.IP) uint {
@@ -18,18 +17,18 @@ func uint2ip(bit uint) net.IP {
 	return ip
 }
 
-func progressReport(lastTime *time.Time, ops uint, format string, a ...interface{}) {
-	now := time.Now()
-	elapsed := now.Sub(*lastTime)
-	rate := float64(ops) / elapsed.Seconds()
-	nsop := float64(elapsed.Nanoseconds()) / float64(ops)
-	fmt.Printf("%v %v: %v ops/s, %.2f ns/op\n", now, fmt.Sprintf(format, a), uint64(rate), nsop)
-	*lastTime = now
+func checkMatch(ip net.IP) {
+	if ip[0] == ip[1] && ip[0] == ip[2] && ip[0] == ip[3] {
+		// Correct match
+	} else {
+		// False-positive match
+	}
 }
 
 func bToMb(b uint64) uint64 {
 	return b / 1024 / 1024
 }
+
 func PrintMemUsage() {
 	var m runtime.MemStats
 	runtime.ReadMemStats(&m)
