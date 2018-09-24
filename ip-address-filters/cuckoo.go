@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"net"
 
-	"github.com/seiflotfy/cuckoofilter"
+	"github.com/mtchavez/cuckoo"
 	"github.com/valyala/fastrand"
 )
 
-func cuckoo_test_sequential(cf *cuckoofilter.CuckooFilter) {
+func cuckoo_test_sequential(cf *cuckoo.Filter) {
 
 	fmt.Println("[cuckoo] Testing sequential ...")
 
@@ -41,7 +41,7 @@ func cuckoo_test_sequential(cf *cuckoofilter.CuckooFilter) {
 
 }
 
-func cuckoo_test_random(cf *cuckoofilter.CuckooFilter) {
+func cuckoo_test_random(cf *cuckoo.Filter) {
 
 	fmt.Println("[cuckoo] Testing random ...")
 
@@ -68,7 +68,13 @@ func cuckoo_test() {
 
 	PrintMemUsage()
 	fmt.Println("[cuckoo] Initializing")
-	cf := cuckoofilter.NewCuckooFilter(1 << 25)
+	options := []cuckoo.ConfigOption{
+		cuckoo.BucketEntries(uint(2)),
+		cuckoo.BucketTotal(uint(1000000)),
+		cuckoo.FingerprintLength(uint(6)),
+		cuckoo.Kicks(uint(500)),
+	}
+	cf := cuckoo.New(options...)
 	PrintMemUsage()
 
 	fmt.Println("[cuckoo] Initializing:Blacklisting")
