@@ -88,15 +88,16 @@ func hash_test() {
 
 	PrintMemUsage()
 	fmt.Println("[hash] Initializing")
-	h := make(hash)
-	PrintMemUsage()
+	h := make(hash, numBlacklistedIPs)
 
-	// Mark 256 IPs as set:
-	for i := 0; i <= 255; i++ {
-		ii := uint8(i)
-		ip := net.IP{ii, ii, ii, ii}
+	PrintMemUsage()
+	fmt.Println("[hash] Initializing:Blacklisting")
+	bl := &blacklist{}
+	for bl.generate() {
+		ip := bl.ip()
 		h[ip2uint(ip)] = true
 	}
+	PrintMemUsage()
 
 	hash_test_sequential_1(h)
 	hash_test_sequential_2(h)

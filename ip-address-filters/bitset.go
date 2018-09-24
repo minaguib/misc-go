@@ -87,14 +87,15 @@ func bitset_test() {
 	PrintMemUsage()
 	fmt.Println("[bitset] Initializing")
 	bs := bitset.New(1 << 32)
-	PrintMemUsage()
 
-	// Mark 256 IPs as set:
-	for i := 0; i <= 255; i++ {
-		ii := uint8(i)
-		ip := net.IP{ii, ii, ii, ii}
+	PrintMemUsage()
+	fmt.Println("[bitset] Initializing:Blacklisting")
+	bl := &blacklist{}
+	for bl.generate() {
+		ip := bl.ip()
 		bs.Set(ip2uint(ip))
 	}
+	PrintMemUsage()
 
 	bitset_test_sequential_1(bs)
 	bitset_test_sequential_2(bs)

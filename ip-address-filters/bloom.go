@@ -68,15 +68,16 @@ func bloom_test() {
 
 	PrintMemUsage()
 	fmt.Println("[bloom] Initializing")
-	bf := bloom.NewWithEstimates(256*2, 0.0001)
-	PrintMemUsage()
+	bf := bloom.NewWithEstimates(numBlacklistedIPs, 0.00000001)
 
-	// Mark 256 IPs as set:
-	for i := 0; i <= 255; i++ {
-		ii := uint8(i)
-		ip := net.IP{ii, ii, ii, ii}
+	PrintMemUsage()
+	fmt.Println("[bloom] Initializing:Blacklisting")
+	bl := &blacklist{}
+	for bl.generate() {
+		ip := bl.ip()
 		bf.Add(ip)
 	}
+	PrintMemUsage()
 
 	bloom_test_sequential(bf)
 	bloom_test_random(bf)

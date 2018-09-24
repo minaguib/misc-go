@@ -71,12 +71,13 @@ func cuckoo_test() {
 	cf := cuckoofilter.NewCuckooFilter(1 << 25)
 	PrintMemUsage()
 
-	// Mark 256 IPs as set:
-	for i := 0; i <= 255; i++ {
-		ii := uint8(i)
-		ip := net.IP{ii, ii, ii, ii}
+	fmt.Println("[cuckoo] Initializing:Blacklisting")
+	bl := &blacklist{}
+	for bl.generate() {
+		ip := bl.ip()
 		cf.Insert(ip)
 	}
+	PrintMemUsage()
 
 	cuckoo_test_sequential(cf)
 	cuckoo_test_random(cf)

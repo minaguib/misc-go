@@ -91,12 +91,13 @@ func array_test() {
 	a := make(array, 1<<32)
 	PrintMemUsage()
 
-	// Mark 256 IPs as set:
-	for i := 0; i <= 255; i++ {
-		ii := uint8(i)
-		ip := net.IP{ii, ii, ii, ii}
+	fmt.Println("[array] Initializing:Blacklisting")
+	bl := &blacklist{}
+	for bl.generate() {
+		ip := bl.ip()
 		a[ip2uint(ip)] = true
 	}
+	PrintMemUsage()
 
 	array_test_sequential_1(a)
 	array_test_sequential_2(a)

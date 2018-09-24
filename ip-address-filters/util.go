@@ -18,10 +18,11 @@ func uint2ip(bit uint) net.IP {
 }
 
 func checkMatch(ip net.IP) {
-	if ip[0] == ip[1] && ip[0] == ip[2] && ip[0] == ip[3] {
+	if isBlacklisted(ip) {
 		// Correct match
 	} else {
 		// False-positive match
+		fmt.Println(ip, "false-positive match")
 	}
 }
 

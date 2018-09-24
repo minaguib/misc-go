@@ -7,6 +7,7 @@ import (
 	"sort"
 )
 
+const numBlacklistedIPs = 1000000
 
 func main() {
 
