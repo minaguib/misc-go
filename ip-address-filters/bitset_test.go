@@ -2,9 +2,7 @@ package main
 
 import (
 	"encoding/binary"
-	"fmt"
 	"net"
-	"runtime"
 	"testing"
 
 	"github.com/valyala/fastrand"
@@ -13,24 +11,24 @@ import (
 
 func BenchmarkBitset(b *testing.B) {
 
-	fmt.Println("")
-	runtime.GC()
-	PrintMemUsage()
-	fmt.Println("[bitset] Initializing")
-	bs := bitset.New(1 << 32)
-	PrintMemUsage()
-
-	fmt.Println("[bitset] Initializing:Blacklisting")
-	bl := &blacklist{}
-	for bl.generate() {
-		ip := bl.ip()
-		bs.Set(ip2uint(ip))
-	}
-	PrintMemUsage()
-
+	var bs *bitset.BitSet
 	rng := fastrand.RNG{}
 
-	b.ResetTimer()
+	b.Run("initialize", func(b *testing.B) {
+		for i := 0; i < b.N; i++ {
+			bs = bitset.New(1 << 32)
+		}
+	})
+
+	b.Run("blacklist", func(b *testing.B) {
+		for i := 0; i < b.N; i++ {
+			bl := &blacklist{}
+			for bl.generate() {
+				ip := bl.ip()
+				bs.Set(ip2uint(ip))
+			}
+		}
+	})
 
 	b.Run("sequential int", func(b *testing.B) {
 		for i := 0; i < b.N; i++ {

@@ -2,9 +2,7 @@ package main
 
 import (
 	"encoding/binary"
-	"fmt"
 	"net"
-	"runtime"
 	"testing"
 
 	"github.com/valyala/fastrand"
@@ -12,24 +10,24 @@ import (
 
 func BenchmarkArray(b *testing.B) {
 
-	runtime.GC()
-	fmt.Println("")
-	PrintMemUsage()
-	fmt.Println("[array] Initializing")
-	a := make([]bool, 1<<32)
-	PrintMemUsage()
-
-	fmt.Println("[array] Initializing:Blacklisting")
-	bl := &blacklist{}
-	for bl.generate() {
-		ip := bl.ip()
-		a[ip2uint(ip)] = true
-	}
-	PrintMemUsage()
-
+	var a []bool
 	rng := fastrand.RNG{}
 
-	b.ResetTimer()
+	b.Run("initialize", func(b *testing.B) {
+		for i := 0; i < b.N; i++ {
+			a = make([]bool, 1<<32)
+		}
+	})
+
+	b.Run("blacklist", func(b *testing.B) {
+		for i := 0; i < b.N; i++ {
+			bl := &blacklist{}
+			for bl.generate() {
+				ip := bl.ip()
+				a[ip2uint(ip)] = true
+			}
+		}
+	})
 
 	b.Run("sequential int", func(b *testing.B) {
 		for i := 0; i < b.N; i++ {

@@ -2,9 +2,7 @@ package main
 
 import (
 	"encoding/binary"
-	"fmt"
 	"net"
-	"runtime"
 	"testing"
 
 	"github.com/mtchavez/cuckoo"
@@ -13,30 +11,30 @@ import (
 
 func BenchmarkCuckoo(b *testing.B) {
 
-	runtime.GC()
-	fmt.Println("")
-	PrintMemUsage()
-	fmt.Println("[cuckoo] Initializing")
-	options := []cuckoo.ConfigOption{
-		cuckoo.BucketEntries(uint(2)),
-		cuckoo.BucketTotal(uint(1000000)),
-		cuckoo.FingerprintLength(uint(6)),
-		cuckoo.Kicks(uint(500)),
-	}
-	cf := cuckoo.New(options...)
-	PrintMemUsage()
-
-	fmt.Println("[cuckoo] Initializing:Blacklisting")
-	bl := &blacklist{}
-	for bl.generate() {
-		ip := bl.ip()
-		cf.Insert(ip)
-	}
-	PrintMemUsage()
-
+	var cf *cuckoo.Filter
 	rng := fastrand.RNG{}
 
-	b.ResetTimer()
+	b.Run("initialize", func(b *testing.B) {
+		for i := 0; i < b.N; i++ {
+			options := []cuckoo.ConfigOption{
+				cuckoo.BucketEntries(uint(2)),
+				cuckoo.BucketTotal(uint(1000000)),
+				cuckoo.FingerprintLength(uint(6)),
+				cuckoo.Kicks(uint(500)),
+			}
+			cf = cuckoo.New(options...)
+		}
+	})
+
+	b.Run("blacklist", func(b *testing.B) {
+		for i := 0; i < b.N; i++ {
+			bl := &blacklist{}
+			for bl.generate() {
+				ip := bl.ip()
+				cf.Insert(ip)
+			}
+		}
+	})
 
 	b.Run("sequential ip", func(b *testing.B) {
 		ip := net.IP{0, 0, 0, 0}

@@ -2,9 +2,7 @@ package main
 
 import (
 	"encoding/binary"
-	"fmt"
 	"net"
-	"runtime"
 	"testing"
 
 	"github.com/valyala/fastrand"
@@ -13,24 +11,24 @@ import (
 
 func BenchmarkBloom(b *testing.B) {
 
-	runtime.GC()
-	fmt.Println("")
-	PrintMemUsage()
-	fmt.Println("[bloom] Initializing")
-	bf := bloom.NewWithEstimates(numBlacklistedIPs, 0.00000001)
-	PrintMemUsage()
-
-	fmt.Println("[bloom] Initializing:Blacklisting")
-	bl := &blacklist{}
-	for bl.generate() {
-		ip := bl.ip()
-		bf.Add(ip)
-	}
-	PrintMemUsage()
-
+	var bf *bloom.BloomFilter
 	rng := fastrand.RNG{}
 
-	b.ResetTimer()
+	b.Run("initialize", func(b *testing.B) {
+		for i := 0; i < b.N; i++ {
+			bf = bloom.NewWithEstimates(numBlacklistedIPs, 0.00000001)
+		}
+	})
+
+	b.Run("blacklist", func(b *testing.B) {
+		for i := 0; i < b.N; i++ {
+			bl := &blacklist{}
+			for bl.generate() {
+				ip := bl.ip()
+				bf.Add(ip)
+			}
+		}
+	})
 
 	b.Run("sequential ip", func(b *testing.B) {
 		ip := net.IP{0, 0, 0, 0}
