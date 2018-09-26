@@ -31,7 +31,7 @@ func BenchmarkArray(b *testing.B) {
 
 	b.Run("sequential int", func(b *testing.B) {
 		for i := 0; i < b.N; i++ {
-			bit := uint(i)
+			bit := uint(uint32(i))
 			if a[bit] {
 				checkMatch(uint2ip(bit))
 			}
