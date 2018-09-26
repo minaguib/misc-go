@@ -13,7 +13,6 @@ func main() {
 
 	available := map[string]func(){
 		"cuckoo": cuckoo_test,
-		"bloom":  bloom_test,
 	}
 
 	tests := os.Args[1:]
