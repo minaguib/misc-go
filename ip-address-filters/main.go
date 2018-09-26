@@ -15,7 +15,6 @@ func main() {
 		"cuckoo": cuckoo_test,
 		"bitset": bitset_test,
 		"hash":   hash_test,
-		"array":  array_test,
 		"bloom":  bloom_test,
 	}
 
