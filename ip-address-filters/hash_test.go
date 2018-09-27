@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/binary"
 	"net"
+	"runtime"
 	"testing"
 
 	"github.com/valyala/fastrand"
@@ -16,6 +17,8 @@ func BenchmarkHash(b *testing.B) {
 
 	b.Run("initialize", func(b *testing.B) {
 		for i := 0; i < b.N; i++ {
+			h = nil
+			runtime.GC()
 			h = make(map[uint]bool, numBlacklistedIPs)
 		}
 	})

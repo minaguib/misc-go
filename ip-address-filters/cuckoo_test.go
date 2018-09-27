@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/binary"
 	"net"
+	"runtime"
 	"testing"
 
 	"github.com/mtchavez/cuckoo"
@@ -16,6 +17,8 @@ func BenchmarkCuckoo(b *testing.B) {
 
 	b.Run("initialize", func(b *testing.B) {
 		for i := 0; i < b.N; i++ {
+			cf = nil
+			runtime.GC()
 			options := []cuckoo.ConfigOption{
 				cuckoo.BucketEntries(uint(2)),
 				cuckoo.BucketTotal(uint(1000000)),

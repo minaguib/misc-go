@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/binary"
 	"net"
+	"runtime"
 	"testing"
 
 	"github.com/valyala/fastrand"
@@ -15,6 +16,8 @@ func BenchmarkArray(b *testing.B) {
 
 	b.Run("initialize", func(b *testing.B) {
 		for i := 0; i < b.N; i++ {
+			a = nil
+			runtime.GC()
 			a = make([]bool, 1<<32)
 		}
 	})
