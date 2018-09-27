@@ -6,8 +6,6 @@ import (
 	"net"
 )
 
-const numBlacklistedIPs = 1000000
-
 func ip2uint(ip net.IP) uint {
 	return uint(binary.BigEndian.Uint32(ip))
 }

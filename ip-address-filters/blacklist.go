@@ -5,6 +5,7 @@ import (
 	"net"
 )
 
+const numBlacklistedIPs = 1000000
 const delta = (1 << 32) / numBlacklistedIPs
 
 type blacklist struct {
