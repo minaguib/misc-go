@@ -6,8 +6,12 @@ import (
 	"net"
 )
 
+func ip2uint32(ip net.IP) uint32 {
+	return binary.BigEndian.Uint32(ip)
+}
+
 func ip2uint(ip net.IP) uint {
-	return uint(binary.BigEndian.Uint32(ip))
+	return uint(ip2uint32(ip))
 }
 
 func uint2ip(bit uint) net.IP {
