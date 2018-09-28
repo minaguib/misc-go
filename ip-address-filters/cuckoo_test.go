@@ -20,10 +20,10 @@ func BenchmarkCuckoo(b *testing.B) {
 			cf = nil
 			runtime.GC()
 			options := []cuckoo.ConfigOption{
-				cuckoo.BucketEntries(uint(2)),
-				cuckoo.BucketTotal(uint(1000000)),
-				cuckoo.FingerprintLength(uint(6)),
-				cuckoo.Kicks(uint(500)),
+				cuckoo.BucketEntries(uint(4)),
+				cuckoo.BucketTotal(uint(numBlacklistedIPs)),
+				cuckoo.FingerprintLength(uint(4)),
+				cuckoo.Kicks(uint(10)),
 			}
 			cf = cuckoo.New(options...)
 		}
