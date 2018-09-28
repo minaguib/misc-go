@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/binary"
+	"fmt"
 	"net"
 	"runtime"
 	"testing"
@@ -14,6 +15,7 @@ func BenchmarkBitset(b *testing.B) {
 
 	var bs *bitset.BitSet
 	rng := fastrand.RNG{}
+	fmt.Println("")
 
 	b.Run("initialize", func(b *testing.B) {
 		for i := 0; i < b.N; i++ {

@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/binary"
+	"fmt"
 	"net"
 	"runtime"
 	"testing"
@@ -12,8 +13,8 @@ import (
 func BenchmarkHash(b *testing.B) {
 
 	var h map[uint]bool
-
 	rng := fastrand.RNG{}
+	fmt.Println("")
 
 	b.Run("initialize", func(b *testing.B) {
 		for i := 0; i < b.N; i++ {
