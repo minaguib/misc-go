@@ -13,10 +13,12 @@ import (
 
 func BenchmarkCuckoo(b *testing.B) {
 
+	var memBefore, memAfter uint64
 	var cf *cuckoo.Filter
 	rng := fastrand.RNG{}
 	fmt.Println("")
 
+	memBefore = memUsed()
 	b.Run("initialize", func(b *testing.B) {
 		for i := 0; i < b.N; i++ {
 			cf = nil
@@ -30,7 +32,11 @@ func BenchmarkCuckoo(b *testing.B) {
 			cf = cuckoo.New(options...)
 		}
 	})
+	memAfter = memUsed()
 
+	fmt.Println("BenchmarkCuckoo: initialize consumed", memAfter-memBefore, "bytes of memory")
+
+	memBefore = memUsed()
 	b.Run("blacklist", func(b *testing.B) {
 		for i := 0; i < b.N; i++ {
 			bl := &blacklist{}
@@ -40,6 +46,9 @@ func BenchmarkCuckoo(b *testing.B) {
 			}
 		}
 	})
+	memAfter = memUsed()
+
+	fmt.Println("BenchmarkCuckoo: blacklist consumed", memAfter-memBefore, "bytes of memory")
 
 	b.Run("sequential ip", func(b *testing.B) {
 		ip := net.IP{0, 0, 0, 0}

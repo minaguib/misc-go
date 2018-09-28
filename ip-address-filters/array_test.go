@@ -13,9 +13,11 @@ import (
 func BenchmarkArray(b *testing.B) {
 
 	var a []bool
+	var memBefore, memAfter uint64
 	rng := fastrand.RNG{}
 	fmt.Println("")
 
+	memBefore = memUsed()
 	b.Run("initialize", func(b *testing.B) {
 		for i := 0; i < b.N; i++ {
 			a = nil
@@ -23,7 +25,11 @@ func BenchmarkArray(b *testing.B) {
 			a = make([]bool, 1<<32)
 		}
 	})
+	memAfter = memUsed()
 
+	fmt.Println("BenchmarkArray: initialize consumed", memAfter-memBefore, "bytes of memory")
+
+	memBefore = memUsed()
 	b.Run("blacklist", func(b *testing.B) {
 		for i := 0; i < b.N; i++ {
 			bl := &blacklist{}
@@ -33,6 +39,9 @@ func BenchmarkArray(b *testing.B) {
 			}
 		}
 	})
+	memAfter = memUsed()
+
+	fmt.Println("BenchmarkArray: blacklist consumed", memAfter-memBefore, "bytes of memory")
 
 	b.Run("sequential int", func(b *testing.B) {
 		for i := 0; i < b.N; i++ {

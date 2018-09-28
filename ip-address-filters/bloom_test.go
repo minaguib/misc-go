@@ -13,10 +13,12 @@ import (
 
 func BenchmarkBloom(b *testing.B) {
 
+	var memBefore, memAfter uint64
 	var bf *bloom.BloomFilter
 	rng := fastrand.RNG{}
 	fmt.Println("")
 
+	memBefore = memUsed()
 	b.Run("initialize", func(b *testing.B) {
 		for i := 0; i < b.N; i++ {
 			bf = nil
@@ -24,7 +26,11 @@ func BenchmarkBloom(b *testing.B) {
 			bf = bloom.NewWithEstimates(numBlacklistedIPs, 0.00000001)
 		}
 	})
+	memAfter = memUsed()
 
+	fmt.Println("BenchmarkBloom: initialize consumed", memAfter-memBefore, "bytes of memory")
+
+	memBefore = memUsed()
 	b.Run("blacklist", func(b *testing.B) {
 		for i := 0; i < b.N; i++ {
 			bl := &blacklist{}
@@ -34,6 +40,9 @@ func BenchmarkBloom(b *testing.B) {
 			}
 		}
 	})
+	memAfter = memUsed()
+
+	fmt.Println("BenchmarkBloom: blacklist consumed", memAfter-memBefore, "bytes of memory")
 
 	b.Run("sequential ip", func(b *testing.B) {
 		ip := net.IP{0, 0, 0, 0}

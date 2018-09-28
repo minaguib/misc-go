@@ -4,6 +4,7 @@ import (
 	"encoding/binary"
 	"fmt"
 	"net"
+	"runtime"
 )
 
 func ip2uint32(ip net.IP) uint32 {
@@ -27,4 +28,11 @@ func checkMatch(ip net.IP) {
 		// False-positive match
 		fmt.Println(ip, "false-positive match")
 	}
+}
+
+func memUsed() uint64 {
+	var m runtime.MemStats
+	runtime.GC()
+	runtime.ReadMemStats(&m)
+	return m.Alloc
 }

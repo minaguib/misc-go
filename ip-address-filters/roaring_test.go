@@ -13,10 +13,12 @@ import (
 
 func BenchmarkRoaring(b *testing.B) {
 
+	var memBefore, memAfter uint64
 	var r *roaring.Bitmap
 	rng := fastrand.RNG{}
 	fmt.Println("")
 
+	memBefore = memUsed()
 	b.Run("initialize", func(b *testing.B) {
 		for i := 0; i < b.N; i++ {
 			r = nil
@@ -24,7 +26,11 @@ func BenchmarkRoaring(b *testing.B) {
 			r = roaring.New()
 		}
 	})
+	memAfter = memUsed()
 
+	fmt.Println("BenchmarkRoaring: initialize consumed", memAfter-memBefore, "bytes of memory")
+
+	memBefore = memUsed()
 	b.Run("blacklist", func(b *testing.B) {
 		for i := 0; i < b.N; i++ {
 			bl := &blacklist{}
@@ -34,6 +40,9 @@ func BenchmarkRoaring(b *testing.B) {
 			}
 		}
 	})
+	memAfter = memUsed()
+
+	fmt.Println("BenchmarkRoaring: blacklist consumed", memAfter-memBefore, "bytes of memory")
 
 	b.Run("sequential int", func(b *testing.B) {
 		for i := 0; i < b.N; i++ {

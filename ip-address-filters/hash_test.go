@@ -12,10 +12,12 @@ import (
 
 func BenchmarkHash(b *testing.B) {
 
+	var memBefore, memAfter uint64
 	var h map[uint]bool
 	rng := fastrand.RNG{}
 	fmt.Println("")
 
+	memBefore = memUsed()
 	b.Run("initialize", func(b *testing.B) {
 		for i := 0; i < b.N; i++ {
 			h = nil
@@ -23,7 +25,11 @@ func BenchmarkHash(b *testing.B) {
 			h = make(map[uint]bool, numBlacklistedIPs)
 		}
 	})
+	memAfter = memUsed()
 
+	fmt.Println("BenchmarkHash: initialize consumed", memAfter-memBefore, "bytes of memory")
+
+	memBefore = memUsed()
 	b.Run("blacklist", func(b *testing.B) {
 		for i := 0; i < b.N; i++ {
 			bl := &blacklist{}
@@ -33,6 +39,9 @@ func BenchmarkHash(b *testing.B) {
 			}
 		}
 	})
+	memAfter = memUsed()
+
+	fmt.Println("BenchmarkHash: blacklist consumed", memAfter-memBefore, "bytes of memory")
 
 	b.Run("sequential int", func(b *testing.B) {
 		for i := 0; i < b.N; i++ {

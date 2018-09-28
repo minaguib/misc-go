@@ -13,10 +13,12 @@ import (
 
 func BenchmarkBitset(b *testing.B) {
 
+	var memBefore, memAfter uint64
 	var bs *bitset.BitSet
 	rng := fastrand.RNG{}
 	fmt.Println("")
 
+	memBefore = memUsed()
 	b.Run("initialize", func(b *testing.B) {
 		for i := 0; i < b.N; i++ {
 			bs = nil
@@ -24,7 +26,11 @@ func BenchmarkBitset(b *testing.B) {
 			bs = bitset.New(1 << 32)
 		}
 	})
+	memAfter = memUsed()
 
+	fmt.Println("BenchmarkBitset: initialize consumed", memAfter-memBefore, "bytes of memory")
+
+	memBefore = memUsed()
 	b.Run("blacklist", func(b *testing.B) {
 		for i := 0; i < b.N; i++ {
 			bl := &blacklist{}
@@ -34,6 +40,9 @@ func BenchmarkBitset(b *testing.B) {
 			}
 		}
 	})
+	memAfter = memUsed()
+
+	fmt.Println("BenchmarkBitset: blacklist consumed", memAfter-memBefore, "bytes of memory")
 
 	b.Run("sequential int", func(b *testing.B) {
 		for i := 0; i < b.N; i++ {
