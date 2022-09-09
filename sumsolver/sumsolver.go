@@ -1,7 +1,7 @@
 package main
 
-/* Given an input set of integers and a target sum value
-   Lists all permutations of set's elements (repetition allowed) that sum up to the target sum value
+/* Given an input sorted set of integers and a target sum value
+   Lists all permutations of set's elements that sum up to the target sum value
 */
 
 import (
@@ -11,7 +11,8 @@ import (
 )
 
 var SET = []int{1, 2, 3, 4, 5, 6}
-var TARGETSUM = 100
+var TARGETSUM = 10
+var ALLOWREPETITION = false
 var OUT = bufio.NewWriter(os.Stdout)
 
 type state []int
@@ -42,7 +43,7 @@ func permute(s state, sum int, pos int) {
 		return
 	}
 
-	for c := 0; ; c++ {
+	for c := 0; ALLOWREPETITION || c <= 1; c++ {
 		extra := c * SET[pos]
 		newsum := sum + extra
 		if newsum > TARGETSUM {
