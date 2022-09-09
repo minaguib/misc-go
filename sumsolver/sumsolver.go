@@ -10,12 +10,18 @@ import (
 	"strconv"
 )
 
+////
+// Invocation inputs
+
 var SET = []int{1, 2, 3, 4, 5, 6}
 var TARGETSUM = 10
-var ALLOWREPETITION = false
-var OUT = bufio.NewWriter(os.Stdout)
+var ALLOWREPETITION = true
+
+////
 
 type state []int
+
+var OUT = bufio.NewWriter(os.Stdout)
 
 // Utility function that prints a human-friendly version of state
 func (s state) print() {
